@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  otel-collector:
+    env_file:
+      - ./.env
+    image: otel/opentelemetry-collector-contrib
+    user: 0:0
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      LOG_EXPORTER_LOG_VERBOSITY: "detailed"
+      NEW_RELIC_API_KEY: ${NEW_RELIC_API_KEY}
+    ports:
+      - 1888:1888 # pprof extension
+      - 8006:8006     # fluentdforward
+      - 8006:8006/udp # fluentforward
+      - 13133:13133 # health_check extension
+      - 4317:4317 # OTLP gRPC receiver
+      - 4318:4318 # OTLP http receiver
+      - 55679:55679 # zpages extension
